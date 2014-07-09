@@ -1,20 +1,3 @@
-<?php
-$uname = "uname";
-$pwd = "pwd";
-session_start();
-if( isset($_POST['uname']) && isset($_POST['pwd']) && $_POST['uname'] == $uname && $_POST['pwd'] == $pwd )
-{
-  echo "Location: ".$_POST['return'];
-  $_SESSION['auth'] = 1;
-  header("Location: ".$_POST['return']);
-  exit();
-}
-$invalid = "";
-if( isset($_POST['uname']) || isset($_POST['pwd']) )
-{
-  $invalid = "<p>Invalid username or password.</p>";
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -26,20 +9,13 @@ if( isset($_POST['uname']) || isset($_POST['pwd']) )
 			div { margin:0.5em; }
 			input { float:right; }
 		</style>
-		<!-- <noscript> not technically allowed in head but <script> is so ... ~ 'probably an oversight' -->
 		<noscript>
 			<meta http-equiv="Refresh" content="0;URL=no-script.html" />
 		</noscript>		
 	</head>
 	<body>
 	  <div class="gw_frame">
-	  <h1>Login</h1>
-      <form style="text-align:center" method="post">
-        <div><label for="uname">User Name:</label><input type="text" name="uname" /><br style="clear:both" /></div>
-        <div><label for="pwd">Password:</label><input type="password" name="pwd" /></div>
-        <input type="hidden" name="return" value="<?php echo $_REQUEST['return']; ?>" />
-        <div><input type="submit" name="" /></div>
-      </form>
+	  <h1>Login?</h1>
     </div>
 	</body>
 </html>

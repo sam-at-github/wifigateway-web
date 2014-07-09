@@ -12,7 +12,7 @@ function start_session(ip_in)
   settings.data = {method:"start_session", params:{ip:ip_in}};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    jQuery(document).trigger("start_session_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("start_session_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)
@@ -34,7 +34,7 @@ function update_session(ip_in)
   settings.data = {method:"update_session", params:{ip:ip_in}};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    jQuery(document).trigger("update_session_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("update_session_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)
@@ -57,7 +57,7 @@ function pause_session(ip_in)
   settings.data = {method:"pause_session", params:{ip:ip_in}};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    jQuery(document).trigger("pause_session_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("pause_session_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)
@@ -79,7 +79,7 @@ function play_session(ip_in)
   settings.data = {method:"play_session", params:{ip:ip_in}};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    jQuery(document).trigger("play_session_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("play_session_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)
@@ -101,7 +101,7 @@ function end_session(ip_in)
   settings.data = {method:"end_session", params:{ip:ip_in}};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    jQuery(document).trigger("end_session_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("end_session_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)
@@ -109,7 +109,30 @@ function end_session(ip_in)
     jQuery(document).trigger("end_session_cb",result);
   }
   jQuery.ajax(settings);
-}   
+}
+
+
+function delete_session(ip_in)
+{
+  console.log("gateway::delete_session ", ip_in);
+  var settings = {};
+  ip_in = (ip_in ? ip_in : 0);
+  settings.type = "POST";
+  settings.dataType = "json";
+  settings.url = "gw_endpoint.php";
+  settings.data = {method:"delete_session", params:{ip:ip_in}};
+  settings.error = function(jqXHR, textStatus, errorThrown)
+  {
+    jQuery(document).trigger("delete_session_cb",{result:null, error:{message:textStatus, code:1}});
+    jQuery(document).trigger("comms_err", null);
+  }
+  settings.success = function(result)
+  {
+    jQuery(document).trigger("delete_session_cb",result);
+  }
+  jQuery.ajax(settings);
+}
+
 
 
 function stats(ip_in)
@@ -123,8 +146,7 @@ function stats(ip_in)
   settings.data = {method:"get_session_stats", params:{ip:ip_in}};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    console.log("Why the fuck is this erroring!!??", textStatus, errorThrown );
-    jQuery(document).trigger("stats_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("stats_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)
@@ -145,7 +167,7 @@ function ips()
   settings.data = {method:"get_ips"};
   settings.error = function(jqXHR, textStatus, errorThrown)
   {
-    jQuery(document).trigger("ips_cb",{result:null, error:{message:"comms err", code:1}});
+    jQuery(document).trigger("ips_cb",{result:null, error:{message:textStatus, code:1}});
     jQuery(document).trigger("comms_err", null);
   }
   settings.success = function(result)

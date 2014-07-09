@@ -10,8 +10,9 @@ jQuery(document).ready(function()
 {
   //p = new Panel();
   console.log("Panel init");
-  jQuery("#ajax_strobe").ajaxStart(function(){this.src = "/images/loading.gif";});
-  jQuery("#ajax_strobe").ajaxStop(function(){this.src = "";});
+	jQuery("#ajax_strobe").css("visibility", "hidden");
+  jQuery("#ajax_strobe").ajaxStart(function(){this.css("visibility","visible");});
+  jQuery("#ajax_strobe").ajaxStop(function(){this.css("visibility", "hidden");});
   pause_button = jQuery("#pause_button").click(function(){pause_session(null);});
   end_button = jQuery("#end_button").click(function(){end_session(null);});
   set_msg("requesting session start");   
@@ -48,7 +49,7 @@ function start_session_cb(e, result)
   {
     // JS passes in random params if you dont set them explicitly!
     //statTimerId = setInterval(stats, 3000, null);
-    updateTimerId = setInterval(update_session, 5000, null);
+    updateTimerId = setInterval(update_session, 15000, null);
   }
   stats();
 }
@@ -188,10 +189,12 @@ function set_state(new_state)
         console.log("state to ended");
         state = "ended";
         set_status("Ended");
-        set_msg(null, "session has ended. Thx.");
+        set_msg("Session has ended. Thx.");
         jQuery("#pause_time_stat").hide();
         jQuery("#pause_button").hide();
         jQuery("#end_button").hide();
+        clearInterval(updateTimerId);
+        setTimeout(function(){window.location = "index.html"}, 3000);
       }
       break;
     }
