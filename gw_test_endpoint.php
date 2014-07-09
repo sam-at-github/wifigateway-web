@@ -1,19 +1,15 @@
 <?php
-require_once("gw.php");
-$gw = new Gateway();
+require_once 'Gateway.php';
+require_once 'JsonRpcWrapper.php';
 
 if($argc < 2)
 {
   echo "Bad args\n";
   exit();
 }
-if(!is_callable(array("Gateway", $argv[1])))
-{
-  echo "Gateway::{$argv[1]} DNE\n";
-  exit();
-}
+$proxy = new JsonRpcWrapper(new Gateway());
 array_shift($argv);
 $method = array_shift($argv);
-call_user_func_array(array($gw,$method),$argv);
+var_dump($proxy->call(array('method' => $method, 'params' => $argv)));
 ?>
   

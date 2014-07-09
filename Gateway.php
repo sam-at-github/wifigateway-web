@@ -41,61 +41,61 @@ class Gateway
 
   public function start_session($host_ip)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     
     if($host_ip)
     {
       $ret = $this->gw->startSession($host_ip);
       if($ret != 0)
       {
-        $return = array('status' => 'fail', 'msg' => "could not create session with IP $host_ip", 'ip' => $host_ip);
+        throw new GatewayException("could not create session with IP $host_ip", $ret);
       }
     }
-    echo json_encode($return);
+    return $return;
   }
 
 
   public function pause_session($host_ip)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     
     if($host_ip)
     {
       $ret = $this->gw->pauseSession($host_ip);
       if($ret != 0)
       {
-        $return = array('status' => 'fail', 'msg' => "could not pause session with IP $host_ip", 'ip' => $host_ip);
+        throw new GatewayException("could not pause session with IP $host_ip", $ret);
       }
     }
-    echo json_encode($return);
+    return $return;
   }
 
 
   public function play_session($host_ip)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     
     if($host_ip)
     {
       $ret = $this->gw->playSession($host_ip);
       if($ret != 0)
       {
-        $return = array('status' => 'fail', 'msg' => "could not play session with IP $host_ip", 'ip' => $host_ip);
+        throw new GatewayException("could not play session with IP $host_ip", $ret);
       }
     }
-    echo json_encode($return);
+    return $return;
   }
 
 
   public function end_session($host_ip)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     $ret = $this->gw->endSession($host_ip);
     if($ret != 0)
     {
-      $return = array('status' => 'fail', 'msg' => "could not end session with IP $host_ip", 'ip' => $host_ip);
+      throw new GatewayException("could not end session with IP $host_ip", $ret);
     }
-    echo json_encode($return);
+    return $return;
   }
 
 
@@ -104,13 +104,13 @@ class Gateway
    */
   public function update_session($host_ip)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     $ret = $this->gw->updateSession($host_ip);
     if($ret != 0)
     {
-      $return = array('status' => 'fail', 'msg' => "could not update session with IP $host_ip", 'ip' => $host_ip);
+      throw new GatewayException("could not update session with IP $host_ip", $ret);
     }
-    echo json_encode($return);
+    return $return;
   }
 
 
@@ -124,8 +124,8 @@ class Gateway
     $raw_stats = $this->gw->getSession($host_ip)->getData();
     // Make into assoc.
     $stats = array_combine(self::$stats, $raw_stats);
-    $return = array('status' => "ok", 'stats' => $stats, 'ip' => $host_ip);
-    echo json_encode($return);
+    $return = array('status' => "ok", 'stats' => $stats);
+    return $return;
   }
 
 
@@ -133,45 +133,47 @@ class Gateway
   {
     $ips = $this->gw->getIPs()->getData();
     $return = array('status' => "ok", 'ips' => $ips);
-    echo json_encode($return);
+    return $return;
   }
 
 
   public function set_bandwidth($ip, $bw)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
 
     $ret = $this->gw->setBandwidth($ip, $bw);
     if($ret != 0)
     {
-      $return = array('status' => 'fail', 'ip' => $host_ip);
+      $return = array('status' => 'fail');
     }
-    echo json_encode($return);
+    return $return;
   }
 
 
   public function set_quota($ip, $qa)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     
     $ret = $this->gw->setQuota($ip, $qa);
     if($ret != 0)
     {
-      $return = array('status' => 'fail', 'ip' => $host_ip);
+      $return = array('status' => 'fail');
     }
-    echo json_encode($return);
+    return $return;
   }
 
   
   public function set_time($ip, $qa)
   {
-    $return = array('status' => "ok", 'ip' => $host_ip);
+    $return = array('status' => "ok");
     
     $ret = $this->gw->setQuota($ip, $qa);
     if($ret != 0)
     {
-      $return = array('status' => 'fail', 'ip' => $host_ip);
+      $return = array('status' => 'fail');
     }
-    echo json_encode($return);
+    return $return;
   }
 }
+
+class GatewayException extends Exception {}
