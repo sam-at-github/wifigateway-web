@@ -4,29 +4,29 @@
 var state;
 var statTimerId;
 var updateTimerId;
-var comm_err_count = 0;
+var comm_error_count = 0;
 
 jQuery(document).ready(function()
 {
   //p = new Panel();
   console.log("Panel init");
-	jQuery("#ajax_strobe").css("visibility", "hidden");
+  jQuery("#ajax_strobe").css("visibility", "hidden");
   jQuery("#ajax_strobe").ajaxStart(function(){this.css("visibility","visible");});
   jQuery("#ajax_strobe").ajaxStop(function(){this.css("visibility", "hidden");});
-  pause_button = jQuery("#pause_button").click(function(){pause_session(null);});
-  end_button = jQuery("#end_button").click(function(){end_session(null);});
-  set_msg("requesting session start");   
-  set_state("starting");
-  start_session();
+  pause_button = jQuery("#pause_button").click(function(){gw_call("pause_session");});
+  end_button = jQuery("#end_button").click(function(){gw_call("end_session");});
   // Bind adaptor callbacks.
   jQuery(document).bind("msg", set_msg_event);
-  jQuery(document).bind("comm_err", comm_err_event);
+  jQuery(document).bind("call_comm_error", comm_error_event_cb);
   jQuery(document).bind("start_session_cb", start_session_cb);
   jQuery(document).bind("update_session_cb", update_session_cb);
   jQuery(document).bind("play_session_cb", play_session_cb);
   jQuery(document).bind("pause_session_cb", pause_session_cb);
   jQuery(document).bind("end_session_cb", end_session_cb);
-  jQuery(document).bind("stats_cb", stats_cb);
+  jQuery(document).bind("get_session_stats_cb", get_session_stats_cb);
+  set_msg("requesting session start");
+  set_state("starting");
+  gw_call("start_session", {});
 });
 
 /**
@@ -47,11 +47,9 @@ function start_session_cb(e, result)
   }
   else
   {
-    // JS passes in random params if you dont set them explicitly!
-    //statTimerId = setInterval(stats, 3000, null);
-    updateTimerId = setInterval(update_session, 15000, null);
+    updateTimerId = setInterval(function(){gw_call("update_session");}, 15000, null);
   }
-  stats();
+  gw_call("get_session_stats");
 }
 
 function update_session_cb(e, result)
@@ -66,7 +64,7 @@ function update_session_cb(e, result)
   {
     jQuery(document).trigger("msg", "keep alive ok");
   }
-  stats();
+  gw_call("get_session_stats");
 }
 
 function pause_session_cb(e, result)
@@ -75,7 +73,7 @@ function pause_session_cb(e, result)
   {
     jQuery(document).trigger("msg","pause session failed");
   }
-  stats();
+  gw_call("get_session_stats");
 }
 
 function play_session_cb(e, result)
@@ -84,7 +82,7 @@ function play_session_cb(e, result)
   {
     jQuery(document).trigger("msg","play session failed");
   }
-  stats();
+  gw_call("get_session_stats");
 }
 
 function end_session_cb(e, result)
@@ -93,10 +91,10 @@ function end_session_cb(e, result)
   {
     jQuery(document).trigger("msg","end session failed");
   }
-  stats();
+  gw_call("get_session_stats");
 }
 
-function stats_cb(e, result)
+function get_session_stats_cb(e, result)
 {
   console.log("sessionpanel::stat_cb: result=", result);
   if(result.error)
@@ -161,7 +159,7 @@ function set_state(new_state)
         set_status("Started");
         jQuery("#pause_time_stat").hide();
         jQuery("#pause_button").text("pause");
-        jQuery("#pause_button").click(function(){pause_session(null);});
+        jQuery("#pause_button").off("click").click(function(){gw_call("pause_session");});
         jQuery("#pause_button").show();
         jQuery("#end_button").show();
       }
@@ -176,7 +174,7 @@ function set_state(new_state)
         set_status("Paused");
         jQuery("#pause_time_stat").show();
         jQuery("#pause_button").text("play");
-        jQuery("#pause_button").click(function(){play_session(null);});
+        jQuery("#pause_button").off("click").click(function(){gw_call("play_session");});
         jQuery("#end_button").show();
       }
       break;
@@ -218,15 +216,15 @@ function set_msg(msg)
   setTimeout(function(){newMsg.remove();}, 2000);
 }
   
-function comm_err(error)
+function comm_error(error)
 {
   msg = error.message ? error.message : "unspecified";
-  set_msg("communication error occured: " + msg);
+  set_msg("communication error occured");
   console.log("communication error occured: " + msg);
-  comm_err_count++;
-  if(comm_err_count > 100)
+  comm_error_count++;
+  if(comm_error_count > 100)
   {
-    //window.location = "index.html";
+    window.location = "index.html";
   }
 }
 
@@ -236,8 +234,8 @@ function set_msg_event(e,msg)
   set_msg(msg);
 }
 
-function comm_err_event(e)
+function comm_error_event_cb(e)
 {
   e.stopPropagation();
-  comm_err();
+  comm_error(e.error);
 }

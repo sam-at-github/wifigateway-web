@@ -30,22 +30,22 @@ session_start();
       jQuery("#ajax_strobe").css("visibility", "hidden");
       jQuery("#ajax_strobe").ajaxStart(function(){this.css("visibility"|"visible");});
       jQuery("#ajax_strobe").ajaxStop(function(){this.css("visibility", "hidden");});
-      jQuery(document).bind("ips_cb", ips_cb);
-      jQuery(document).bind("stats_cb", stats_cb);
-      jQuery(document).bind("end_cb", end_cb);
-      ips();
+      jQuery(document).bind("get_ips_cb", get_ips_cb);
+      jQuery(document).bind("get_session_stats_cb", get_session_stats_cb);
+      jQuery(document).bind("end_session_cb", end_session_cb);
+      gw_call("get_ips");
       setInterval(ips_update, 5000);
     });
     
     function ips_update()
     {
       jQuery("#session_list tbody").children().remove();
-      ips();
+      gw_call("get_ips");
     }
     
-    function ips_cb(e,result)
+    function get_ips_cb(e, result)
     {
-      console.log("ips_cb ");
+      console.log("get_ips_cb", result);
       
       if(result.result)
       {
@@ -53,12 +53,12 @@ session_start();
         var ips = result.ips;
         for(var i = 0; i < ips.length; i++)
         {
-          stats(ips[i]);
+          gw_call("get_session_stats", {ip:ips[i]});
         }
       }
     }
     
-    function end_cb()
+    function end_session_cb()
     {
       ips_update();
     }
@@ -66,7 +66,7 @@ session_start();
     /**
      * {status:"ok", stats:{IP:"12.12.12.28", MAC:"", state:3, bandwidth:1000, timeRemaining:0, quotaRemaining:500, activityTimeRemaining:60, updateTimeRemaining:0, pauseTimeRemaining:30, endTimeRemaining:5, sessionTime:30}, ip:"12.12.12.28"}
      */
-    function stats_cb(e,result)
+    function get_session_stats_cb(e, result)
     { 
       console.log("stats_cb ");
       
@@ -104,7 +104,7 @@ session_start();
       str += "</td>";
       var item = jQuery(str);
       
-      item.find(".end_button").click(function(){ end_session(IP); });
+      item.find(".end_button").off("click").click(function(){gw_call("end_session", {ip:IP});});
       jQuery("#session_list tbody").append(item);
     }        
       
